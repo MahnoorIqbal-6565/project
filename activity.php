@@ -11,35 +11,41 @@
 <body>
     <div class="container">
     <?php
-require_once "database.php"; // Make sure this file contains the database connection code
+    require_once "database.php"; // Make sure this file contains the database connection code
 
-if (isset($_POST["save"])) {
-    $activityName = $_POST["activityName"];
-    $activityStartDate = $_POST["activityStartDate"];
-    $activityEndDate = $_POST["activityEndDate"];
-    $responsibility = $_POST["responsibility"];
-    $notes = $_POST["notes"];
+    if (isset($_GET['projectId'])) {
+        $projectId = $_GET['projectId'];
 
-    $errors = array();
+        if (isset($_POST["save"])) {
+            $activityName = $_POST["activityName"];
+            $activityStartDate = $_POST["activityStartDate"];
+            $activityEndDate = $_POST["activityEndDate"];
+            $responsibility = $_POST["responsibility"];
+            $notes = $_POST["notes"];
 
-    if (empty($activityName) || empty($activityStartDate) || empty($activityEndDate) || empty($responsibility)) {
-        array_push($errors, "All fields are required");
-    } else {
-        $sql = "INSERT INTO activity (activityName, activityStartDate, activityEndDate, responsibility,notes) VALUES (?, ?, ?, ?,?)";
-        $stmt = mysqli_stmt_init($conn);
+            $errors = array();
 
-        if (mysqli_stmt_prepare($stmt, $sql)) {
-            mysqli_stmt_bind_param($stmt, "sssss", $activityName, $activityStartDate, $activityEndDate, $responsibility,$notes);
-            mysqli_stmt_execute($stmt);
-            echo "<div class='alert alert-success'>Activity Saved successfully.</div>";
-        } else {
-            die("Something went wrong");
+            if (empty($activityName) || empty($activityStartDate) || empty($activityEndDate) || empty($responsibility)) {
+                array_push($errors, "All fields are required");
+            } else {
+                $sql = "INSERT INTO activity (activityName, activityStartDate, activityEndDate, responsibility, notes, projectId) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = mysqli_stmt_init($conn);
+
+                if (mysqli_stmt_prepare($stmt, $sql)) {
+                    mysqli_stmt_bind_param($stmt, "sssssi", $activityName, $activityStartDate, $activityEndDate, $responsibility, $notes, $projectId);
+                    mysqli_stmt_execute($stmt);
+                    echo "<div class='alert alert-success'>Activity Saved successfully.</div>";
+                } else {
+                    die("Something went wrong");
+                }
+            }
         }
+    } else {
+        die("projectId is required");
     }
-}
-?>
+    ?>    
 
-        <form action="activity.php" method="post">
+        <form action="activity.php?projectId=<?php echo $projectId; ?>" method="post">
             <label for="activityName">Activity Name: </label>
             <div class="form-group">
                 <input type="text" class="form-control" name="activityName" placeholder="Enter Your Activity Name:">
@@ -60,19 +66,15 @@ if (isset($_POST["save"])) {
             <div class="form-group">
                 <textarea type="text" class="form-control" name="notes" placeholder="Enter Your Notes:"></textarea>
             </div>
-            <div  style="display:flex; flex-direction: row;align-items: center;justify-content: space-between;">
-            <div class="form-btn">
-                <input style="width: 150px;" type="submit" class="btn btn-primary" value="Save" name="save">
-            </div>
-            <div class="form-btn">
-            <a style="width: 150px;" class="btn btn-primary" href="displayactivity.php">Details</a>
-
-            </div>
+            <div style="display:flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                <div class="form-btn">
+                    <input style="width: 150px;" type="submit" class="btn btn-primary" value="Save" name="save">
+                </div>
+                <div class="form-btn">
+                    <a style="width: 150px;" class="btn btn-primary" href="displayactivity.php">Details</a>
+                </div>
             </div>
         </form>
-        <div>
-       
-      </div>
     </div>
 </body>
 </html>

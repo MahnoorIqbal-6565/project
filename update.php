@@ -3,10 +3,10 @@ include "database.php";
 
 // Check if updateid is set in the URL
 if(isset($_GET['updateid'])){
-    $projectName = $_GET['updateid'];
+    $projectId = $_GET['updateid'];
     
     // Fetch the record based on updateid
-    $sql="SELECT * FROM projects WHERE projectName = '$projectName'";
+    $sql="SELECT * FROM projects WHERE projectId = '$projectId'";
     $result=mysqli_query($conn,$sql);
     $row=mysqli_fetch_assoc($result);
     

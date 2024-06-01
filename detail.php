@@ -18,7 +18,7 @@
       <th scope="col">Description</th>
       <th scope="col">Start Date</th>
       <th scope="col">End Date</th>
-      <th scope="col" colspan="2">Operations</th>
+      <th scope="col" colspan="3">Operations</th>
     </tr>
   </thead>
   <tbody>
@@ -44,9 +44,10 @@
         <td>'.$description.'</td>
         <td>'.$startDate.'</td>
         <td>'.$endDate.'</td>
-        <td><button class="btn btn-primary"><a href="update.php?updateid='.$projectName.'" style="text-decoration:none;" class="text-light">Update</a></button></td>
-        <td><button class="btn btn-danger"><a href="delete.php?deleteid='.$projectName.'" style="text-decoration:none;" class="text-light">Delete</a></button></td>
-      </tr>';
+        <td><button class="btn btn-primary"><a href="update.php?updateid='.$projectId.'" style="text-decoration:none;" class="text-light">Update</a></button></td>
+        <td><button class="btn btn-danger"><a href="delete.php?deleteid='.$projectId.'" style="text-decoration:none;" class="text-light">Delete</a></button></td>
+        <td><button class="btn btn-success"><a href="activity.php?projectId='.$projectId.'" style="text-decoration:none;" class="text-light">Add Activity</a></button></td>
+        </tr>';
        }
     }
     ?>

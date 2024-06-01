@@ -42,9 +42,9 @@
         <td>'.$activityEndDate.'</td>
         <td>'.$responsibility.'</td>
         <td>'.$notes.'</td>
-        <td><button class="btn btn-primary"><a href="update.php?updateid='.$activityName.'" style="text-decoration:none;" class="text-light">Update</a></button></td>
-        <td><button class="btn btn-danger"><a href="delete.php?deleteid='.$activityName.'" style="text-decoration:none;" class="text-light">Delete</a></button></td>
-        <td><button class="btn btn-danger"><a href="delete.php?deleteid='.$activityName.'" style="text-decoration:none;" class="text-light">Add SubActivity</a></button></td>
+        <td><button class="btn btn-primary"><a href="update_activity.php?updateid='.$activityId.'" style="text-decoration:none;" class="text-light">Update</a></button></td>
+        <td><button class="btn btn-danger"><a href="delete_activity.php?deleteid='.$activityId.'" style="text-decoration:none;" class="text-light">Delete</a></button></td>
+        <td><button class="btn btn-danger"><a href="subactivityform.php?deleteid='.$activityId.'" style="text-decoration:none;" class="text-light">Add SubActivity</a></button></td>
         </tr>';
        }
     }

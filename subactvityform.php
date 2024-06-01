@@ -11,35 +11,41 @@
 <body>
     <div class="container">
     <?php
-require_once "database.php"; // Make sure this file contains the database connection code
+    require_once "database.php"; // Make sure this file contains the database connection code
 
-if (isset($_POST["save"])) {
-    $sactivityName = $_POST["sactivityName"];
-    $sactivityStartDate = $_POST["sactivityStartDate"];
-    $sactivityEndDate = $_POST["sactivityEndDate"];
-    $sresponsibility = $_POST["sresponsibility"];
-    $snotes = $_POST["snotes"];
+    if(isset($_GET['activityId'])){
+        $activityId = $_GET['activityId'];
 
-    $errors = array();
+        if (isset($_POST["save"])) {
+            $sactivityName = $_POST["sactivityName"];
+            $sactivityStartDate = $_POST["sactivityStartDate"];
+            $sactivityEndDate = $_POST["sactivityEndDate"];
+            $sresponsibility = $_POST["sresponsibility"];
+            $snotes = $_POST["snotes"];
 
-    if (empty($sactivityName) || empty($sactivityStartDate) || empty($sactivityEndDate) || empty($sresponsibility)) {
-        array_push($errors, "All fields are required");
-    } else {
-        $sql = "INSERT INTO subactivity (sactivityName, sactivityStartDate, sactivityEndDate, sresponsibility,snotes) VALUES (?, ?, ?, ?,?)";
-        $stmt = mysqli_stmt_init($conn);
+            $errors = array();
 
-        if (mysqli_stmt_prepare($stmt, $sql)) {
-            mysqli_stmt_bind_param($stmt, "sssss", $sactivityName, $sactivityStartDate, $sactivityEndDate, $sresponsibility,$snotes);
-            mysqli_stmt_execute($stmt);
-            echo "<div class='alert alert-success'>Sub Activity Saved successfully.</div>";
-        } else {
-            die("Something went wrong");
+            if (empty($sactivityName) || empty($sactivityStartDate) || empty($sactivityEndDate) || empty($sresponsibility)) {
+                array_push($errors, "All fields are required");
+            } else {
+                $sql = "INSERT INTO subactivity (sactivityName, sactivityStartDate, sactivityEndDate, sresponsibility, snotes, activityId) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = mysqli_stmt_init($conn);
+
+                if (mysqli_stmt_prepare($stmt, $sql)) {
+                    mysqli_stmt_bind_param($stmt, "sssssi", $sactivityName, $sactivityStartDate, $sactivityEndDate, $sresponsibility, $snotes, $activityId);
+                    mysqli_stmt_execute($stmt);
+                    echo "<div class='alert alert-success'>Sub Activity Saved successfully.</div>";
+                } else {
+                    die("Something went wrong");
+                }
+            }
         }
+    } else {
+        die("activityId is required");
     }
-}
-?>
+    ?>    
 
-        <form action="subactivity.php" method="post">
+        <form action="subactvityform.php?activityId=<?php echo $activityId; ?>" method="post">
             <label for="sactivityName">Sub-Activity Name: </label>
             <div class="form-group">
                 <input type="text" class="form-control" name="sactivityName" placeholder="Enter Your Sub-Activity Name:">
@@ -60,19 +66,15 @@ if (isset($_POST["save"])) {
             <div class="form-group">
                 <textarea type="text" class="form-control" name="snotes" placeholder="Enter Your Sub-Activity Notes:"></textarea>
             </div>
-            <div  style="display:flex; flex-direction: row;align-items: center;justify-content: space-between;">
-            <div class="form-btn">
-                <input style="width: 150px;" type="submit" class="btn btn-primary" value="Save" name="save">
-            </div>
-            <div class="form-btn">
-            <a style="width: 150px;" class="btn btn-primary" href="displayactivity.php">Details</a>
-
-            </div>
+            <div style="display:flex; flex-direction: row;align-items: center;justify-content: space-between;">
+                <div class="form-btn">
+                    <input style="width: 150px;" type="submit" class="btn btn-primary" value="Save" name="save">
+                </div>
+                <div class="form-btn">
+                    <a style="width: 150px;" class="btn btn-primary" href="displayactivity.php">Details</a>
+                </div>
             </div>
         </form>
-        <div>
-       
-      </div>
     </div>
 </body>
 </html>
