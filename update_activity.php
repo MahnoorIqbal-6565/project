@@ -1,6 +1,10 @@
 <?php
 include "database.php";
 
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Initialize variables
 $activityId = "";
 $activityName = "";
@@ -8,16 +12,22 @@ $activityStartDate = "";
 $activityEndDate = "";
 $responsibility = "";
 $notes = "";
-$projectId = NULL; // Initialize projectId to NULL
+$projectId = "";
 
 // Check if updateid is set in the URL
 if (isset($_GET['updateid'])) {
     $activityId = $_GET['updateid'];
+    $projectId=$_GET['projectId'];
+  
+    
     
     // Fetch the record based on updateid
-    $sql = "SELECT * FROM activity WHERE activityId = '$activityId'";
-    $result = mysqli_query($conn, $sql);
-    
+    $sql = "SELECT * FROM activity WHERE activityId = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 'i', $activityId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
         // Assign fetched values to variables
@@ -26,7 +36,7 @@ if (isset($_GET['updateid'])) {
         $activityEndDate = $row['activityEndDate'];
         $responsibility = $row['responsibility'];
         $notes = $row['notes'];
-        $projectId = $row['projectId']; // Fetch projectId if available
+       // $projectId = $row['projectId'];
     } else {
         echo "<div class='alert alert-danger'>No record found for the given ID.</div>";
     }
@@ -39,17 +49,14 @@ if (isset($_POST['update'])) {
     $activityEndDate = $_POST['activityEndDate'];
     $responsibility = $_POST['responsibility'];
     $notes = $_POST['notes'];
-    
+    $projectId = $_POST['projectId'];
+
     // Update the record
-    $sql = "UPDATE activity SET 
-            activityName='$activityName', 
-            activityStartDate='$activityStartDate', 
-            activityEndDate='$activityEndDate', 
-            responsibility='$responsibility', 
-            notes='$notes'
-            WHERE activityId='$activityId'";
-    $result = mysqli_query($conn, $sql);
-    
+    $sql = "UPDATE activity SET activityName=?, activityStartDate=?, activityEndDate=?, responsibility=?, notes=?, projectId=? WHERE activityId=?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 'sssssii', $activityName, $activityStartDate, $activityEndDate, $responsibility, $notes, $projectId, $activityId);
+    $result = mysqli_stmt_execute($stmt);
+
     // Check if update was successful
     if ($result) {
         echo "<div class='alert alert-success'>Updated the record successfully!</div>";
@@ -90,6 +97,7 @@ if (isset($_POST['update'])) {
             <div class="form-group">
                 <textarea class="form-control" name="notes" placeholder="Enter Your Notes:" required><?php echo htmlspecialchars($notes); ?></textarea>
             </div>
+            <input type="hidden" name="projectId" value="<?php echo htmlspecialchars($projectId); ?>">
             <div style="display:flex; flex-direction: row; align-items: center; justify-content: space-between;">
                 <div class="form-btn">
                     <input style="width: 150px;" type="submit" class="btn btn-primary" value="Update" name="update">
@@ -102,3 +110,4 @@ if (isset($_POST['update'])) {
     </div>
 </body>
 </html>
+

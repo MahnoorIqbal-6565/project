@@ -1,125 +1,107 @@
+<?php
+include "database.php";
+
+// Initialize variables
+$activityId = "";
+$activityName = "";
+$activityStartDate = "";
+$activityEndDate = "";
+$responsibility = "";
+$notes = "";
+$projectId = "";
+
+// Check if updateid and projectid are set in the URL
+if (isset($_GET['updateid']) && isset($_GET['projectid'])) {
+    $activityId = $_GET['updateid'];
+    $projectId = $_GET['projectid'];
+
+    // Fetch the record based on updateid and projectid
+    $sql = "SELECT * FROM activities WHERE activityId = ? AND projectId = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $activityId, $projectId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        // Assign fetched values to variables
+        $activityName = $row['activityName'];
+        $activityStartDate = $row['activityStartDate'];
+        $activityEndDate = $row['activityEndDate'];
+        $responsibility = $row['responsibility'];
+        $notes = $row['notes'];
+    } else {
+        echo "<div class='alert alert-danger'>No record found for the given ID.</div>";
+        exit();
+    }
+} else {
+    echo "<div class='alert alert-danger'>Activity ID and Project ID are required.</div>";
+    exit();
+}
+
+// Check if the form is submitted
+if (isset($_POST['update'])) {
+    $activityName = $_POST['activityName'];
+    $activityStartDate = $_POST['activityStartDate'];
+    $activityEndDate = $_POST['activityEndDate'];
+    $responsibility = $_POST['responsibility'];
+    $notes = $_POST['notes'];
+
+    // Update the record
+    $sql = "UPDATE activities SET activityName=?, activityStartDate=?, activityEndDate=?, responsibility=?, notes=? WHERE activityId=? AND projectId=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ssssssi', $activityName, $activityStartDate, $activityEndDate, $responsibility, $notes, $activityId, $projectId);
+    $result = $stmt->execute();
+
+    // Check if update was successful
+    if ($result) {
+        echo "<div class='alert alert-success'>Updated the record successfully!</div>";
+    } else {
+        echo "<div class='alert alert-danger'>Error updating record: " . $stmt->error . "</div>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <title>Activity and Sub-Activity</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Update Activity Record</title>
 </head>
 <body>
     <div class="container">
-    <?php
-    // Database connection parameters
-    require_once "database.php";
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    // SQL query to fetch activities and their associated subactivities
-    $sql = "SELECT 
-                activity.activityId, 
-                activity.activityName, 
-                activity.activityStartDate, 
-                activity.activityEndDate, 
-                activity.responsibility, 
-                activity.notes, 
-                subactivity.subactivityId, 
-                subactivity.sactivityName, 
-                subactivity.sactivityStartDate, 
-                subactivity.sactivityEndDate, 
-                subactivity.sresponsibility, 
-                subactivity.snotes 
-            FROM 
-                activity 
-            LEFT JOIN 
-                subactivity ON activity.activityId = subactivity.activityId 
-            ORDER BY 
-                activity.activityId, 
-                subactivity.subactivityId;";
-
-    $result = mysqli_query($conn, $sql);
-
-    if ($result) {
-        // Initialize variables to track the current activity
-        $currentActivityId = null;
-        $currentActivityData = null;
-
-        while ($row = mysqli_fetch_assoc($result)) {
-            $activityId = $row['activityId'];
-
-            // If it's a new activity, display the activity row and reset current activity data
-            if ($activityId != $currentActivityId) {
-                if ($currentActivityId !== null) {
-                    echo '</tbody></table>';
-                }
-
-                $currentActivityId = $activityId;
-                $currentActivityData = $row;
-
-                // Display activity row
-                echo '<table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Activity ID</th>
-                                <th scope="col">Activity Name</th>
-                                <th scope="col">Activity Start Date</th>
-                                <th scope="col">Activity End Date</th>
-                                <th scope="col">Responsibility</th>
-                                <th scope="col">Notes</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>';
-
-                echo '<tr>
-                        <th scope="row">' . $currentActivityData['activityId'] . '</th>
-                        <td>' . $currentActivityData['activityName'] . '</td>
-                        <td>' . $currentActivityData['activityStartDate'] . '</td>
-                        <td>' . $currentActivityData['activityEndDate'] . '</td>
-                        <td>' . $currentActivityData['responsibility'] . '</td>
-                        <td>' . $currentActivityData['notes'] . '</td>
-                        <td>
-                            <button class="btn btn-primary">
-                                <a href="update.php?updateid=' . $currentActivityData['activityId'] . '" style="text-decoration:none;" class="text-light">Update</a>
-                            </button>
-                            <button class="btn btn-danger">
-                                <a href="delete.php?deleteid=' . $currentActivityData['activityId'] . '" style="text-decoration:none;" class="text-light">Delete</a>
-                            </button>
-                        </td>
-                    </tr>';
-            }
-
-            // Display subactivity if exists
-            if (!empty($row['subactivityId'])) {
-                echo '<tr>
-                        <td>' . $row['subactivityId'] . '</td>
-                        <td>' . $row['sactivityName'] . '</td>
-                        <td>' . $row['sactivityStartDate'] . '</td>
-                        <td>' . $row['sactivityEndDate'] . '</td>
-                        <td>' . $row['sresponsibility'] . '</td>
-                        <td>' . $row['snotes'] . '</td>
-                        <td>
-                            <button class="btn btn-primary">
-                                <a href="update_subactivity.php?updateid=' . $row['subactivityId'] . '" style="text-decoration:none;" class="text-light">Update</a>
-                            </button>
-                            <button class="btn btn-danger">
-                                <a href="delete_subactivity.php?deleteid=' . $row['subactivityId'] . '" style="text-decoration:none;" class="text-light">Delete</a>
-                            </button>
-                        </td>
-                    </tr>';
-            }
-        }
-
-        // Close the last activity table
-        if ($currentActivityId !== null) {
-            echo '</tbody></table>';
-        }
-    } else {
-        echo "No results found.";
-    }
-
-    $conn->close();
-    ?>
+        <form action="activity.php?updateid=<?php echo htmlspecialchars($activityId); ?>&projectid=<?php echo htmlspecialchars($projectId); ?>" method="post">
+            <label for="activityName">Activity Name: </label>
+            <div class="form-group">
+                <input type="text" class="form-control" name="activityName" value="<?php echo htmlspecialchars($activityName); ?>" placeholder="Enter Your Activity Name:" required>
+            </div>
+            <label for="activityStartDate">Activity Start Date: </label>
+            <div class="form-group">
+                <input type="date" class="form-control" name="activityStartDate" value="<?php echo htmlspecialchars($activityStartDate); ?>" placeholder="Enter Activity Start Date:" required>
+            </div>
+            <label for="activityEndDate">Activity End Date: </label>
+            <div class="form-group">
+                <input type="date" class="form-control" name="activityEndDate" value="<?php echo htmlspecialchars($activityEndDate); ?>" placeholder="Enter Activity End Date:" required>
+            </div>
+            <label for="responsibility">Responsible Person Name: </label>
+            <div class="form-group">
+                <input type="text" class="form-control" name="responsibility" value="<?php echo htmlspecialchars($responsibility); ?>" placeholder="Enter Responsible Person Name:" required>
+            </div>
+            <label for="notes">Notes: </label>
+            <div class="form-group">
+                <textarea class="form-control" name="notes" placeholder="Enter Your Notes:" required><?php echo htmlspecialchars($notes); ?></textarea>
+            </div>
+            <div style="display:flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                <div class="form-btn">
+                    <input style="width: 150px;" type="submit" class="btn btn-primary" value="Update" name="update">
+                </div>
+                <div class="form-btn">
+                    <a style="width: 150px;" class="btn btn-primary" href="displayactivity.php">Details</a>
+                </div>
+            </div>
+        </form>
     </div>
 </body>
 </html>
