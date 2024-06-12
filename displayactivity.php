@@ -44,7 +44,7 @@
         <td>'.$notes.'</td>
         <td><button class="btn btn-primary"><a href="update_activity.php?updateid='.$activityId.', projectId='.$projectId.'" style="text-decoration:none;" class="text-light">Update</a></button></td>
         <td><button class="btn btn-danger"><a href="delete_activity.php?deleteid='.$activityId.'" style="text-decoration:none;" class="text-light">Delete</a></button></td>
-        <td><button class="btn btn-success"><a href="subactivityform.php?deleteid='.$activityId.'" style="text-decoration:none;" class="text-light">Add SubActivity</a></button></td>
+        <td><button class="btn btn-success"><a href="subactvityform.php?activityId='.$activityId.'" style="text-decoration:none;" class="text-light">Add SubActivity</a></button></td>
         </tr>';
        }
     }

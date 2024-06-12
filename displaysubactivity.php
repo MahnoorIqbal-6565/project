@@ -72,10 +72,10 @@
                     <td>' . $notes . '</td>
                     <td>
                         <button class="btn btn-primary">
-                            <a href="update.php?updateid=' . $activityId . '" style="text-decoration:none;" class="text-light">Update</a>
+                            <a href="update_activity.php?updateid=' . $activityId . '" style="text-decoration:none;" class="text-light">Update</a>
                         </button>
                         <button class="btn btn-danger">
-                            <a href="delete.php?deleteid=' . $activityId . '" style="text-decoration:none;" class="text-light">Delete</a>
+                            <a href="delete_activity.php?deleteid=' . $activityId . '" style="text-decoration:none;" class="text-light">Delete</a>
                         </button>
                         <button class="btn btn-success">
                             <a href="subactvityform.php?activityId=' . $activityId . '" style="text-decoration:none;" class="text-light">Add SubActivity</a>

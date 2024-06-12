@@ -11,7 +11,7 @@ if(isset($_GET['updateid'])){
     $row=mysqli_fetch_assoc($result);
     
     // Assign fetched values to variables
- 
+    $projectName = $row['projectName'];
     $teamLeader = $row['teamLeader'];
     $teamMember = $row['teamMember'];
     $description = $row['description'];
@@ -29,7 +29,7 @@ if(isset($_POST['update'])){
     $endDate = $_POST['endDate'];
     
     // Update the record
-    $sql = "UPDATE projects SET projectName='$projectName', teamLeader='$teamLeader', teamMember='$teamMember', description='$description', startDate='$startDate', endDate='$endDate' WHERE projectName='$projectName'";
+    $sql = "UPDATE projects SET projectName='$projectName', teamLeader='$teamLeader', teamMember='$teamMember', description='$description', startDate='$startDate', endDate='$endDate' WHERE projectId='$projectId'";
     $result=mysqli_query($conn,$sql);
     
     // Check if update was successful
